@@ -1,0 +1,22 @@
+<div class="landing-container">
+    <section class="hero">
+      <h1>Welcome to DocuSense</h1>
+      <p>Your smart assistant for document classification & analysis.</p>
+      <div class="actions">
+        <button mat-raised-button color="primary" routerLink="/login">Login</button>
+        <button mat-stroked-button color="accent" routerLink="/signup">Sign Up</button>
+      </div>
+    </section>
+  
+    <section class="features">
+      <mat-card class="feature-card" *ngFor="let feature of features">
+        <mat-card-header>
+          <mat-card-title>{{ feature.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ feature.description }}</p>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </div>
+  

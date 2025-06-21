@@ -1,0 +1,47 @@
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  .landing-container .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .landing-container .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .landing-container .hero p {
+    font-size: 1.25rem;
+    color: #666;
+  }
+  
+  .landing-container .hero .actions {
+    margin-top: 2rem;
+  }
+  
+  .landing-container .hero .actions button {
+    margin: 0 1rem;
+  }
+  
+  .landing-container .features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 1000px;
+  }
+  
+  .landing-container .feature-card {
+    width: 300px;
+    transition: transform 0.3s ease;
+  }
+  
+  .landing-container .feature-card:hover {
+    transform: scale(1.05);
+  }
+  
