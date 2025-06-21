@@ -6,6 +6,10 @@ import json
 from agents.classifier_agent import classify_document
 from services.document_service import DocumentService
 from services.user_service import UserService
+from agents.router_agent import route_document
+from services.routing_service import RoutingService
+from services.log_service import LogService
+
 from database.base import get_db_connection
 from datetime import datetime
 
@@ -13,6 +17,9 @@ def consume_documents():
     db = next(get_db_connection())
     doc_service = DocumentService(db)
     user_service = UserService(db)
+    routing_service = RoutingService(db)
+    log_service = LogService(db)
+
 
     consumer = KafkaConsumer(
         'document_ingest',
@@ -61,6 +68,23 @@ def consume_documents():
         if doc_id:
             doc_service.add_extracted_text(doc_id, extracted_text)
             print(f"✅ Document stored with ID: {doc_id}")
+
+             # Route document based on type
+            target_system = route_document(doc_type)
+            routing_service.add_route(doc_id, target_system)
+
+            # Update document status to "routed"
+            doc_service.update_status(doc_id, "routed")
+             # Log routing
+            log_service.log_event(
+                event_type="INFO",
+                message=f"Document routed to {target_system}",
+                source="router_agent",
+                user_id=user_id,
+                document_id=doc_id
+            )
+
+            print(f"🚚 Routed to: {target_system}")
         else:
             print("❌ Failed to insert document.")
 

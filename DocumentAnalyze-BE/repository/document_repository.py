@@ -61,3 +61,12 @@ class DocumentRepository:
     def get_all_documents(self):
         stmt = select(Document)
         return self.db.execute(stmt).scalars().all()
+    
+    def update_status(self, document_id, status):
+        doc = self.db.query(Document).filter_by(id=document_id).first()
+        if doc:
+            doc.status = status
+            self.db.commit()
+            return True
+        return False
+

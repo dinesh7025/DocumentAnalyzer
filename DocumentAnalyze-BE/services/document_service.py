@@ -24,3 +24,7 @@ class DocumentService:
 
     def list_documents(self):
         return self.repo.get_all_documents()
+
+    def update_status(self, document_id, status):
+        return self.repo.update_status(document_id, status)
+

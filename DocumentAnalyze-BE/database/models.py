@@ -70,3 +70,12 @@ class Error(Base):
     resolved = Column(Boolean, default=False)
 
     document = relationship("Document", back_populates="errors")
+
+class Routing(Base):
+    __tablename__ = 'routing'
+
+    id = Column(Integer, primary_key=True)
+    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    routed_to = Column(String(100), nullable=False)  
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    reason = Column(Text)
