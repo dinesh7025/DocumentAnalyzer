@@ -1,0 +1,25 @@
+::::::::::: Kafka Server Stating ::::::::::::
+
+1. Downlaod the kafka file(scala) : https://dlcdn.apache.org/kafka/3.9.1/kafka_2.13-3.9.1.tgz
+2. Extract it to a folder and in open that. In Config folder modify zookeeper. propertis(data-dir = <D:/path to kafka/zookeeper-data>)
+3. Then in same folder modify server.properties(logs.dir = <path to kafka/kafka-kogs>)
+4. In kafka end folder, 
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties 
+in one terminal
+5. In another terminal, .\bin\windows\kafka-server-start.bat .\config\server.properties
+6. Keep them running.
+
+::::::::: kafka message receive and checking it :::::::::::::::
+✅ Create the topic (if not already created)
+.\bin\windows\kafka-topics.bat --create --topic document_ingest --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+It will show an error if the topic already exists. That's fine.
+
+ ✅ Start a console Kafka consumer
+This will let you watch real-time messages being published:
+
+.\bin\windows\kafka-console-consumer.bat --topic document_ingest --from-beginning --bootstrap-server localhost:9092
+Leave this running in one terminal. Now when you hit your Flask API, the messages should appear here.
+
+
+:::::::::: API test in Post MAn::::::::::
+http://127.0.0.1:5000/api/upload 

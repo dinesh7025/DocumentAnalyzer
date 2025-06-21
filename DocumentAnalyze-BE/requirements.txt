@@ -1,0 +1,17 @@
+flask
+flask-cors
+kafka-python
+psycopg2-binary
+sqlalchemy
+python-dotenv
+langchain
+pytesseract
+PyMuPDF
+PyPDF2
+openai
+pillow
+python-dotenv
+langchain-community
+langchain-openai
+azure-storage-blob>=12.0.0
+Flask-JWT-Extended passlib
