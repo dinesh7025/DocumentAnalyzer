@@ -1,0 +1,17 @@
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #ede7f6;
+    padding-top: 1rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  }
+  
+  a.mat-list-item {
+    color: #3f51b5;
+    font-weight: 500;
+  }
+  
+  a.mat-list-item.active {
+    background-color: #d1c4e9;
+  }
+  

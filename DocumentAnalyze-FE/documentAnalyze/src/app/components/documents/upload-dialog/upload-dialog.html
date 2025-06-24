@@ -1,0 +1,23 @@
+<div class="dialog-container" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()"
+     [class.drag-over]="dragOver">
+
+  <button mat-icon-button class="close-btn" (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <h2>Upload Document</h2>
+
+  <div class="drop-area">
+    <p *ngIf="!selectedFile">Drag & drop your file or click below</p>
+    <p *ngIf="selectedFile">Selected: {{ selectedFile.name }}</p>
+
+    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept=".pdf,.png,.jpg,.jpeg" />
+    <button mat-raised-button color="accent" (click)="fileInput.click()">Choose File</button>
+  </div>
+
+  <mat-progress-bar *ngIf="uploading" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+
+  <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || uploading">
+    {{ uploading ? 'Uploading...' : 'Upload' }}
+  </button>
+</div>

@@ -1,0 +1,32 @@
+.dialog-container {
+    padding: 24px;
+    position: relative;
+    text-align: center;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+  
+  .drop-area {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: 0.3s;
+  }
+  
+  .drag-over {
+    border-color: #3f51b5;
+    background-color: #f0f4ff;
+  }
+  
+  button {
+    margin-top: 10px;
+  }
+  

@@ -23,7 +23,7 @@ class Document(Base):
     id = Column(Integer, primary_key=True)
     filename = Column(Text, nullable=False)
     storage_path = Column(Text, nullable=False)
-    uploaded_by = Column(Integer, ForeignKey('users.id'))
+    uploaded_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     upload_time = Column(DateTime, default=datetime.utcnow)
     document_type = Column(Text)
     status = Column(String(50), default='pending')
@@ -32,6 +32,7 @@ class Document(Base):
     uploader = relationship("User", back_populates="documents")
     extracted_text = relationship("DocumentText", back_populates="document", uselist=False)
     errors = relationship("Error", back_populates="document")
+    routing = relationship("Routing", backref="document", lazy="joined")
 
 
 class DocumentText(Base):
@@ -53,7 +54,7 @@ class Log(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
     source = Column(Text)
     user_id = Column(Integer, ForeignKey('users.id'))
-    document_id = Column(Integer, ForeignKey('documents.id'))
+    document_id = Column(Integer, ForeignKey('documents.id',  ondelete='SET NULL'))
 
     __table_args__ = (
         CheckConstraint("event_type IN ('ERROR', 'INFO', 'WARNING')", name='event_type_check'),

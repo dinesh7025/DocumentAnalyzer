@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 
 
 @Component({
   selector: 'app-landing',
-  imports: [MatButtonModule, MatCardModule,CommonModule],
+  imports: [MatButtonModule, MatCardModule,CommonModule, RouterLink, RouterModule],
   templateUrl: './landing.html',
   styleUrl: './landing.css'
 })

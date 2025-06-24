@@ -13,18 +13,15 @@ class DocumentService:
     def add_extracted_text(self, document_id, extracted_text):
         return self.repo.insert_extracted_text(document_id, extracted_text)
 
-    def update_document(self, document_id, updates):
-        self.repo.update_document(document_id, updates)
+    def get_all_documents(self):
+        return self.repo.get_all_documents_with_details()
+
+    def get_documents_by_user(self, user_id):
+        return self.repo.get_documents_by_user(user_id)
+    
+    def update_status(self, doc_id, status):
+        return self.repo.update_status(doc_id, status)
 
     def delete_document(self, document_id):
-        self.repo.delete_document(document_id)
-
-    def get_document(self, document_id):
-        return self.repo.get_document_by_id(document_id)
-
-    def list_documents(self):
-        return self.repo.get_all_documents()
-
-    def update_status(self, document_id, status):
-        return self.repo.update_status(document_id, status)
+        return self.repo.delete_document(document_id)
 

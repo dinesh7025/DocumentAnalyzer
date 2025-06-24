@@ -1,8 +1,12 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.exc import SQLAlchemyError
 from database.models import Document, DocumentText
+from sqlalchemy.orm import joinedload
+
+
+
 
 class DocumentRepository:
     def __init__(self, db):
@@ -31,37 +35,34 @@ class DocumentRepository:
             print(f"Text insert error: {e}")
             return False
 
-    def update_document(self, document_id, updates):
+    def get_documents_by_user(self, user_id):
         try:
-            stmt = select(Document).where(Document.id == document_id)
-            doc = self.db.execute(stmt).scalar_one_or_none()
-            if doc:
-                for key, value in updates.items():
-                    setattr(doc, key, value)
-                self.db.commit()
+            stmt = (
+                select(Document)
+                .options(joinedload(Document.uploader))
+                .where(Document.uploaded_by == user_id)
+                .order_by(desc(Document.upload_time))
+            )
+            return self.db.execute(stmt).unique().scalars().all()
         except SQLAlchemyError as e:
-            self.db.rollback()
-            print(f"Update error: {e}")
+            print(f"Get by user error: {e}")
+            return []
 
-    def delete_document(self, document_id):
+    def get_all_documents_with_details(self):
         try:
-            stmt = select(Document).where(Document.id == document_id)
-            doc = self.db.execute(stmt).scalar_one_or_none()
-            if doc:
-                self.db.delete(doc)
-                self.db.commit()
+            stmt = (
+                select(Document)
+                .options(
+                    joinedload(Document.uploader),
+                    joinedload(Document.extracted_text)
+                )
+                .order_by(desc(Document.upload_time))
+            )
+            return self.db.execute(stmt).unique().scalars().all()
         except SQLAlchemyError as e:
-            self.db.rollback()
-            print(f"Delete error: {e}")
-
-    def get_document_by_id(self, document_id):
-        stmt = select(Document).where(Document.id == document_id)
-        return self.db.execute(stmt).scalar_one_or_none()
-
-    def get_all_documents(self):
-        stmt = select(Document)
-        return self.db.execute(stmt).scalars().all()
-    
+            print(f"Get all error: {e}")
+            return []
+        
     def update_status(self, document_id, status):
         doc = self.db.query(Document).filter_by(id=document_id).first()
         if doc:
@@ -70,3 +71,23 @@ class DocumentRepository:
             return True
         return False
 
+    def delete_document(self, document_id):
+        try:
+            doc = self.db.query(Document).filter_by(id=document_id).first()
+            if doc:
+                # Delete related entries manually if not using cascade
+                if doc.extracted_text:
+                    self.db.delete(doc.extracted_text)
+                for error in doc.errors:
+                    self.db.delete(error)
+                for route in doc.routing:
+                    self.db.delete(route)
+
+                self.db.delete(doc)
+                self.db.commit()
+                return True
+            return False
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            print(f"Delete error: {e}")
+            return False

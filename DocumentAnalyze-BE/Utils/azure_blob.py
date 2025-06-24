@@ -1,4 +1,4 @@
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContentSettings
 import os
 from dotenv import load_dotenv
 import uuid
@@ -17,7 +17,18 @@ blob_service_client = BlobServiceClient(
 def upload_file_to_blob(file_stream, filename, content_type="application/octet-stream"):
     blob_name = f"{uuid.uuid4()}_{filename}"
     blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-    
-    blob_client.upload_blob(file_stream, overwrite=True, content_type=content_type)
-    
-    return blob_client.url  # This URL can be stored in DB
+
+    # Define content settings to trigger download behavior
+    content_settings = ContentSettings(
+        content_type=content_type,
+        content_disposition=f'attachment; filename="{filename}"'
+    )
+
+    # Upload the file with content settings
+    blob_client.upload_blob(
+        file_stream,
+        overwrite=True,
+        content_settings=content_settings
+    )
+
+    return blob_client.url  # Save this in DB

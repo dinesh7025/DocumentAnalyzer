@@ -3,8 +3,8 @@
       <h1>Welcome to DocuSense</h1>
       <p>Your smart assistant for document classification & analysis.</p>
       <div class="actions">
-        <button mat-raised-button color="primary" routerLink="/login">Login</button>
-        <button mat-stroked-button color="accent" routerLink="/signup">Sign Up</button>
+        <button mat-raised-button color="primary" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }">Login</button>
+        <button mat-stroked-button color="accent" [routerLink]="['/login']" [queryParams]="{ mode: 'signup' }">Sign Up</button>
       </div>
     </section>
   

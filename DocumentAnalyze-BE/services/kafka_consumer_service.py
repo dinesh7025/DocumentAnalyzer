@@ -39,9 +39,9 @@ def consume_documents():
         filename = data.get("filename")
         extracted_text = data.get("extracted_text")
         file_url = data.get("file_url", "")
-        uploaded_by_username = data.get("uploaded_by", "")
+        uploaded_by = data.get("uploaded_by", "")
 
-        if not filename or not extracted_text or not uploaded_by_username:
+        if not filename or not extracted_text or not uploaded_by:
             print("⚠️ Missing fields in message. Skipping.")
             continue
 
@@ -49,9 +49,9 @@ def consume_documents():
         print(f"📄 Classified as: {doc_type}")
 
         # Get user ID from username
-        user_id = user_service.get_user_id_by_username(uploaded_by_username)
+        user_id = uploaded_by
         if not user_id:
-            print(f"❌ User '{uploaded_by_username}' not found. Skipping document.")
+            print(f"❌ User '{user_id}' not found. Skipping document.")
             continue
 
         # Insert document metadata

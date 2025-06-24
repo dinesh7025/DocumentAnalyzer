@@ -23,3 +23,6 @@ Leave this running in one terminal. Now when you hit your Flask API, the message
 
 :::::::::: API test in Post MAn::::::::::
 http://127.0.0.1:5000/api/upload 
+
+alembic setup:
+alembic init alembic
