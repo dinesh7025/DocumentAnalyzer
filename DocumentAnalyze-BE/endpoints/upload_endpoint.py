@@ -22,12 +22,16 @@ def upload_document():
     extracted_text = result.get("extracted_text")
     file_url = result.get("file_url")
     userId = request.form.get("userId", "system")
+    ocr_duration = result.get("duration")
+
 
     send_to_kafka("document_ingest", {
         "filename": filename,
         "extracted_text": extracted_text,
         "file_url": file_url,
-        "uploaded_by": userId
+        "uploaded_by": userId,
+        "ocr_duration": ocr_duration
+
     })
 
     return jsonify({"message": "File ingested and queued for processing", "details": result})
