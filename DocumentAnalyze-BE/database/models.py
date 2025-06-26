@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean, CheckConstraint
+from sqlalchemy import Column, Integer, String, Text,Float, ForeignKey, DateTime, Boolean, CheckConstraint
 from sqlalchemy.orm import relationship, declarative_base
 from datetime import datetime
 
@@ -80,3 +80,15 @@ class Routing(Base):
     routed_to = Column(String(100), nullable=False)  
     timestamp = Column(DateTime, default=datetime.utcnow)
     reason = Column(Text)
+
+class ProcessingStage(Base):
+    __tablename__ = 'processing_stages'
+
+    id = Column(Integer, primary_key=True)
+    document_id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
+    stage = Column(String(50), nullable=False)
+    duration = Column(Float)  
+    details = Column(Text)
+
+    document = relationship("Document", backref="stages")
+
