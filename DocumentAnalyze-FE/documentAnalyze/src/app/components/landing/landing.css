@@ -1,47 +1,189 @@
+/* Root Layout */
 .landing-container {
-    display: flex;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.2rem 1em;
+  background: linear-gradient(120deg, #e0f7fa, #f3e5f5);
+  overflow: hidden !important;
+  min-height: 92vh;
+  font-family: 'Poppins', sans-serif;
+
+}
+
+/* Floating Particles Background */
+.landing-container::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 20%, rgba(33, 150, 243, 0.1), transparent 40%),
+              radial-gradient(circle at 80% 30%, rgba(156, 39, 176, 0.1), transparent 40%),
+              radial-gradient(circle at 50% 80%, rgba(255, 193, 7, 0.1), transparent 50%);
+  animation: floatParticles 40s linear infinite;
+  z-index: 0;
+}
+
+@keyframes floatParticles {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-10%, -10%); }
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  margin-bottom: 5rem;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 1.2s ease;
+}
+
+.hero h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #1a237e;
+  background: linear-gradient(90deg, #1a237e, #512da8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.hero h1::after {
+  content: '';
+  display: block;
+  margin: 0.5rem auto 0;
+  width: 80px;
+  height: 4px;
+  background: #00bcd4;
+  border-radius: 2px;
+}
+
+.hero p {
+  font-size: 1rem;
+  color: #455a64;
+  margin-bottom: 2.5rem;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+button[mat-raised-button],
+button[mat-stroked-button] {
+  padding: 0.75rem 2.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 30px;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+button[mat-raised-button]:hover,
+button[mat-stroked-button]:hover {
+  transform: scale(1.06);
+  box-shadow: 0 12px 28px rgba(33, 150, 243, 0.3);
+}
+
+button[mat-raised-button]:hover::after,
+button[mat-stroked-button]:hover::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 10%, transparent 60%);
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* Features Grid */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Feature Card with Glass Effect */
+.feature-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Feature Titles and Descriptions */
+mat-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #283593;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+mat-card-title::before {
+  content: '🧠';
+  font-size: 1rem;
+}
+
+mat-card-content p {
+  font-size: 1rem;
+  color: #37474f;
+  margin-top: 0.5rem;
+}
+
+/* Fade-in Entry */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.3rem;
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+  }
+
+  .actions {
     flex-direction: column;
-    align-items: center;
-    padding: 2rem;
+    gap: 1rem;
   }
-  
-  .landing-container .hero {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  
-  .landing-container .hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-  
-  .landing-container .hero p {
-    font-size: 1.25rem;
-    color: #666;
-  }
-  
-  .landing-container .hero .actions {
-    margin-top: 2rem;
-  }
-  
-  .landing-container .hero .actions button {
-    margin: 0 1rem;
-  }
-  
-  .landing-container .features {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1.5rem;
-    max-width: 1000px;
-  }
-  
-  .landing-container .feature-card {
-    width: 300px;
-    transition: transform 0.3s ease;
-  }
-  
-  .landing-container .feature-card:hover {
-    transform: scale(1.05);
-  }
-  
+}

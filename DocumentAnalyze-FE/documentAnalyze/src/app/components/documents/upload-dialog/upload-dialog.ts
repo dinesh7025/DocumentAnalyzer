@@ -1,24 +1,30 @@
 import { Component } from '@angular/core';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { DocumentService } from '../../../services/document-service';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { MatIconButton } from '@angular/material/button';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { DocumentService } from '../../../services/document-service';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatIconButton, MatIconModule, MatProgressBarModule],
   selector: 'app-upload-dialog',
   templateUrl: './upload-dialog.html',
-  styleUrls: ['./upload-dialog.css']
+  styleUrls: ['./upload-dialog.css'],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatButtonModule
+  ]
 })
 export class UploadDialogComponent {
-  selectedFile: File | null = null;
+  selectedFiles: File[] = [];
+  uploadProgressMap = new Map<string, number>();
   dragOver = false;
-  uploadProgress = 0;
   uploading = false;
 
   constructor(
@@ -27,11 +33,10 @@ export class UploadDialogComponent {
     private snackBar: MatSnackBar
   ) {}
 
-  onFileSelected(event: Event) {
+  onFilesSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input?.files?.length) {
-      const file = input.files[0];
-      this.validateAndSetFile(file);
+      this.addFiles(Array.from(input.files));
     }
   }
 
@@ -39,7 +44,7 @@ export class UploadDialogComponent {
     event.preventDefault();
     this.dragOver = false;
     if (event.dataTransfer?.files?.length) {
-      this.validateAndSetFile(event.dataTransfer.files[0]);
+      this.addFiles(Array.from(event.dataTransfer.files));
     }
   }
 
@@ -52,40 +57,62 @@ export class UploadDialogComponent {
     this.dragOver = false;
   }
 
-  validateAndSetFile(file: File) {
+  addFiles(files: File[]) {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
-      this.snackBar.open('Only PDF, JPG, and PNG files are allowed.', 'Close', { duration: 3000 });
-      return;
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        this.snackBar.open(`File "${file.name}" is not a supported format.`, 'Close', { duration: 3000 });
+        continue;
+      }
+      if (!this.selectedFiles.some(f => f.name === file.name)) {
+        this.selectedFiles.push(file);
+      }
     }
-    this.selectedFile = file;
   }
 
   upload() {
-    if (!this.selectedFile) return;
-
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-
+    if (!this.selectedFiles.length) return;
 
     this.uploading = true;
 
-    this.docService.uploadDocument(this.selectedFile,user?.user_id).subscribe({
-      next: (event: HttpEvent<any>) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          this.uploadProgress = Math.round((event.loaded / event.total) * 100);
-        } else if (event.type === HttpEventType.Response) {
-          this.snackBar.open('Upload successful!', 'Close', { duration: 3000 });
-          this.dialogRef.close('uploaded');
+    const uploads = this.selectedFiles.map(file =>
+      this.docService.uploadDocument(file, user?.user_id).subscribe({
+        next: (event: HttpEvent<any>) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            this.uploadProgressMap.set(file.name, percent);
+          } else if (event.type === HttpEventType.Response) {
+            this.uploadProgressMap.set(file.name, 100);
+          }
+        },
+        error: () => {
+          this.snackBar.open(`Upload failed for ${file.name}`, 'Close', { duration: 3000 });
+          this.uploadProgressMap.set(file.name, -1);
         }
-      },
-      error: err => {
-        this.uploading = false;
-        this.snackBar.open('Upload failed. Please try again.', 'Close', { duration: 3000 });
-      }
+      })
+    );
+
+    // Close dialog after uploads
+    Promise.allSettled(uploads).then(() => {
+      this.snackBar.open('All uploads attempted.', 'Close', { duration: 3000 });
+      this.dialogRef.close('uploaded');
     });
   }
 
   close() {
     this.dialogRef.close();
+  }
+
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  getUploadProgress(fileName: string): number {
+    return this.uploadProgressMap.get(fileName) || 0;
+  }
+
+  isFailed(fileName: string): boolean {
+    return this.uploadProgressMap.get(fileName) === -1;
   }
 }

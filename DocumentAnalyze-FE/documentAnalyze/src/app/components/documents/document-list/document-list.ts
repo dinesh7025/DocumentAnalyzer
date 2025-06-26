@@ -1,5 +1,5 @@
 // src/app/components/documents/document-list.component.ts
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -9,6 +9,8 @@ import { UploadDialogComponent } from '../upload-dialog/upload-dialog';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { interval, Subscription } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -20,16 +22,19 @@ import { MatIconModule } from '@angular/material/icon';
     MatSortModule,
     MatIconButton,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTooltipModule
   ],
   providers: [DatePipe],
   templateUrl: './document-list.html',
   styleUrls: ['./document-list.css']
 })
-export class DocumentListComponent implements OnInit {
+export class DocumentListComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['id', 'filename', 'type', 'routed', 'time', 'status', 'actions'];
   dataSource = new MatTableDataSource<DocumentModel>();
   isAdmin = false;
+
+  private pollingSubscription!: Subscription;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -39,7 +44,22 @@ export class DocumentListComponent implements OnInit {
   ngOnInit() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.isAdmin = user?.role === 'admin';
+    this.fetchDocuments();
 
+    // Optional: Auto-refresh every 10 seconds
+    this.pollingSubscription = interval(10000).subscribe(() => {
+      this.fetchDocuments();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
+  }
+
+  fetchDocuments() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (this.isAdmin) {
       this.docService.getAllDocuments().subscribe(docs => this.setTable(docs));
     } else {
@@ -56,13 +76,15 @@ export class DocumentListComponent implements OnInit {
   openUploadDialog() {
     const dialogRef = this.dialog.open(UploadDialogComponent, { width: '400px' });
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'uploaded') this.ngOnInit();
+      if (result === 'uploaded') {
+        this.fetchDocuments(); // Only reload the table, not the whole component
+      }
     });
   }
 
   deleteDocument(id: number) {
     if (confirm('Are you sure you want to delete this document?')) {
-      this.docService.deleteDocument(id).subscribe(() => this.ngOnInit());
+      this.docService.deleteDocument(id).subscribe(() => this.fetchDocuments());
     }
   }
 

@@ -2,87 +2,180 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
-  background-color: #f5f7fa;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa, #f3e5f5);
+  font-family: 'Poppins', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 20% 30%, rgba(33,150,243,0.1), transparent 50%),
+              radial-gradient(circle at 80% 70%, rgba(156,39,176,0.1), transparent 50%);
+  animation: floatParticles 50s linear infinite;
+  z-index: 0;
 }
 
 .auth-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  width: 350px;
-  text-align: center;
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  animation: fadeIn 1s ease-out;
 }
 
 .auth-card h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a237e;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #1a237e, #512da8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.auth-card p {
+  text-align: center;
+  font-size: 1rem;
+  color: #37474f;
   margin-bottom: 1.5rem;
-  color: #333;
 }
 
-.form-group {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-weight: bold;
-  color: #555;
-}
-
-input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-small {
-  color: red;
-  font-size: 0.75rem;
-}
-
-.actions {
-  margin-top: 1.5rem;
+form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-button {
-  padding: 0.6rem;
-  border: none;
-  border-radius: 6px;
+form input {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ccc;
   font-size: 1rem;
-  background-color: #3f51b5;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.8);
+}
+
+form input:focus {
+  outline: none;
+  border-color: #512da8;
+  box-shadow: 0 0 8px rgba(81, 45, 168, 0.2);
+}
+
+form button {
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(120deg, #1a237e, #512da8);
   color: white;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(33, 150, 243, 0.2);
 }
 
-button:hover {
-  background-color: #303f9f;
+form button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(81, 45, 168, 0.3);
 }
 
-button.link {
-  background: none;
-  color: #3f51b5;
+.toggle-mode {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+  color: #37474f;
+}
+
+.toggle-mode a {
+  margin-left: 0.3rem;
+  color: #512da8;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.toggle-mode a:hover {
   text-decoration: underline;
-  font-size: 0.9rem;
 }
 
-.message {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-.message.success {
-  color: green;
+@keyframes floatParticles {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-10%, -10%); }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 2rem 1.2rem;
+  }
+
+  form input,
+  form button {
+    font-size: 0.9rem;
+  }
+
+  .auth-card h2 {
+    font-size: 1.6rem;
+  }
+}.message.success {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 .message.error {
-  color: red;
+  background-color: #ffcdd2;
+  color: #b71c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+
+input.ng-invalid.ng-touched,
+input.ng-invalid.ng-dirty {
+  border-color: #d32f2f;
+  background-color: #ffebee;
+}
+
+.error-text {
+  font-size: 0.85rem;
+  color: #d32f2f;
+  margin-top: 0.2rem;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.forgot-password a {
+  color: #512da8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+

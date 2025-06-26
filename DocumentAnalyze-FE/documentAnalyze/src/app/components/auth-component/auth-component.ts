@@ -1,6 +1,6 @@
 // src/app/components/auth/auth.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth-service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
   templateUrl: './auth-component.html',
   styleUrls: ['./auth-component.css']
 })
-export class AuthComponent {
+export class AuthComponent implements OnInit {
   authForm: FormGroup;
   isSignupMode = false;
   showSuccessMessage = false;
@@ -20,35 +20,64 @@ export class AuthComponent {
   errorMessage = '';
   successMessage = '';
 
-  private route = inject(ActivatedRoute); // ✅ correct injection
+  private route = inject(ActivatedRoute);
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.authForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      email: [''] // validated only in signup
+      email: ['']
     });
+  }
 
+  ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.isSignupMode = params['mode'] === 'signup';
+      this.updateEmailValidators();
     });
+  }
+
+  get username() {
+    return this.authForm.get('username')!;
+  }
+
+  get email() {
+    return this.authForm.get('email')!;
+  }
+
+  get password() {
+    return this.authForm.get('password')!;
+  }
+
+  updateEmailValidators() {
+    if (this.isSignupMode) {
+      this.email.setValidators([Validators.required, Validators.email]);
+    } else {
+      this.email.clearValidators();
+    }
+    this.email.updateValueAndValidity();
   }
 
   toggleMode() {
     this.isSignupMode = !this.isSignupMode;
     this.authForm.reset();
+    this.updateEmailValidators();
   }
 
   onSubmit() {
-    if (this.authForm.invalid) return;
+    if (this.authForm.invalid) {
+      this.authForm.markAllAsTouched();
+      return;
+    }
 
     const { username, password, email } = this.authForm.value;
 
     if (this.isSignupMode) {
       this.authService.signup({ username, password, email }).subscribe({
-        next: res => {
+        next: () => {
           this.successMessage = 'Signup successful. Please log in.';
           this.showSuccessMessage = true;
+          this.showErrorMessage = false;
           this.toggleMode();
         },
         error: err => this.showError(err)
@@ -60,6 +89,7 @@ export class AuthComponent {
           localStorage.setItem('user', JSON.stringify(res.user));
           this.successMessage = 'Login successful!';
           this.showSuccessMessage = true;
+          this.showErrorMessage = false;
           this.router.navigate(['/dashboard']);
         },
         error: err => this.showError(err)
@@ -70,17 +100,18 @@ export class AuthComponent {
   showError(err: any) {
     this.errorMessage = err?.error?.message || 'Something went wrong';
     this.showErrorMessage = true;
+    this.showSuccessMessage = false;
   }
 
   onForgotPassword() {
-    const username = this.authForm.get('username')?.value;
-    if (!username) {
+    const usernameVal = this.username.value;
+    if (!usernameVal) {
       this.errorMessage = 'Please enter your username to reset password.';
       this.showErrorMessage = true;
       return;
     }
 
-    console.log(`Forgot password requested for ${username}`);
+    console.log(`Forgot password requested for ${usernameVal}`);
     alert('OTP request for password reset triggered (mock).');
   }
 }

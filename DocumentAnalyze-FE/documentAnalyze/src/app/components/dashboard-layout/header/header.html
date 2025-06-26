@@ -1,8 +1,36 @@
 <header class="app-header">
+  <div class="app-title-container">
+    <!-- Online Document Icon -->
+    <img src="https://cdn-icons-png.flaticon.com/128/2821/2821739.png" alt="DocuSense Logo" class="app-logo" />
     <div class="app-title">DocuSense</div>
-    <div class="user-info">
-      <span>{{ username }}</span>
-      <button mat-button color="warn" (click)="logout()">Logout</button>
+  </div>
+
+  <!-- Profile Dropdown -->
+  <div class="user-dropdown" [class.open]="menuOpen" (mouseleave)="menuOpen = false">
+    <div class="user-avatar" (click)="menuOpen = !menuOpen">
+      <!-- Online User Icon -->
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/9131/9131529.png"
+        alt="User"
+        class="user-avatar-img"
+      />
+      <mat-icon>expand_more</mat-icon>
     </div>
+
+    <!-- Dropdown Menu -->
+    <div class="dropdown-menu" *ngIf="menuOpen">
+      <div class="dropdown-item">
+        <mat-icon>person</mat-icon>
+        <span>Profile</span>
+      </div>
+      <div class="dropdown-item">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </div>
+      <div class="dropdown-item logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </div>
+    </div>
+  </div>
 </header>
-  

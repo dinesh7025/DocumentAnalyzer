@@ -1,32 +1,103 @@
 .dialog-container {
-    padding: 24px;
-    position: relative;
-    text-align: center;
-  }
-  
-  h2 {
-    margin-bottom: 20px;
-  }
-  
-  .close-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-  }
-  
-  .drop-area {
-    border: 2px dashed #ccc;
-    padding: 20px;
-    margin-bottom: 20px;
-    transition: 0.3s;
-  }
-  
-  .drag-over {
-    border-color: #3f51b5;
-    background-color: #f0f4ff;
-  }
-  
-  button {
-    margin-top: 10px;
-  }
-  
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+ width: auto;
+ 
+  margin: auto;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  color: #999;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+.drop-area {
+  border: 2px dashed #88c8ff;
+  padding: 2rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s;
+  background: #f4faff;
+  position: relative;
+}
+
+.drop-area:hover {
+  border-color: #339aff;
+}
+
+.drop-area p {
+  color: #777;
+  margin-bottom: 1rem;
+}
+
+.drop-area ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #444;
+  font-size: 0.9rem;
+}
+
+.drop-area li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+  background: #e6f3ff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+}
+
+.remove-icon {
+  cursor: pointer;
+  color: #e53935;
+}
+
+button[mat-raised-button] {
+  width: 100%;
+  border-radius: 25px;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+button[color="accent"] {
+  background-color: #2196f3;
+  color: #fff;
+}
+
+button[color="accent"]:hover {
+  background-color: #1976d2;
+}
+
+button[color="primary"] {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+button[color="primary"]:hover {
+  background-color: #388e3c;
+}
+
+/* Optional: Drag Over Effect */
+.dialog-container.drag-over .drop-area {
+  background-color: #e3f2fd;
+  border-color: #1e88e5;
+}

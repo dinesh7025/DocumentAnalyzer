@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,MatIconModule],
   selector: 'app-header',
   templateUrl: './header.html',
   styleUrls: ['./header.css']
@@ -24,4 +24,6 @@ export class HeaderComponent implements OnInit {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+  menuOpen = false;
+
 }

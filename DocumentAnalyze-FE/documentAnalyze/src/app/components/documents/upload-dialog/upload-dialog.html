@@ -1,23 +1,59 @@
-<div class="dialog-container" (drop)="onDrop($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave()"
+<div class="dialog-container"
+     (drop)="onDrop($event)"
+     (dragover)="onDragOver($event)"
+     (dragleave)="onDragLeave()"
      [class.drag-over]="dragOver">
 
+  <!-- Close button -->
   <button mat-icon-button class="close-btn" (click)="close()">
     <mat-icon>close</mat-icon>
   </button>
 
-  <h2>Upload Document</h2>
-
-  <div class="drop-area">
-    <p *ngIf="!selectedFile">Drag & drop your file or click below</p>
-    <p *ngIf="selectedFile">Selected: {{ selectedFile.name }}</p>
-
-    <input type="file" #fileInput (change)="onFileSelected($event)" hidden accept=".pdf,.png,.jpg,.jpeg" />
-    <button mat-raised-button color="accent" (click)="fileInput.click()">Choose File</button>
+  <!-- Cloud Icon -->
+  <div class="cloud-icon">
+    <i class="fas fa-cloud-upload-alt"></i>
   </div>
 
-  <mat-progress-bar *ngIf="uploading" mode="determinate" [value]="uploadProgress"></mat-progress-bar>
+  <!-- Heading -->
+  <h2>Upload Documents</h2>
 
-  <button mat-raised-button color="primary" (click)="upload()" [disabled]="!selectedFile || uploading">
+  <!-- Drop Area -->
+  <div class="drop-area" (click)="fileInput.click()">
+    <p *ngIf="!selectedFiles.length">
+      You can drag & drop your files here or click to browse
+    </p>
+
+    <ul *ngIf="selectedFiles.length">
+      <li *ngFor="let file of selectedFiles; let i = index">
+        {{ file.name }}
+        <mat-icon *ngIf="!uploading" class="remove-icon" (click)="removeFile(i)">close</mat-icon>
+        <mat-progress-bar
+          *ngIf="uploading"
+          mode="determinate"
+          [value]="getUploadProgress(file.name)"
+          [color]="isFailed(file.name) ? 'warn' : 'primary'">
+        </mat-progress-bar>
+      </li>
+    </ul>
+
+    <!-- Hidden input -->
+    <input type="file"
+           #fileInput
+           (change)="onFilesSelected($event)"
+           multiple
+           hidden
+           accept=".pdf,.png,.jpg,.jpeg" />
+  </div>
+
+  <!-- Choose Files Button -->
+  <button mat-raised-button color="accent" (click)="fileInput.click()" style="margin-top: 1rem;">
+    <i class="fas fa-folder-open" style="margin-right: 8px;"></i> Browse for file …
+  </button>
+
+  <!-- Upload Button -->
+  <button mat-raised-button color="primary"
+          (click)="upload()"
+          [disabled]="!selectedFiles.length || uploading">
     {{ uploading ? 'Uploading...' : 'Upload' }}
   </button>
 </div>

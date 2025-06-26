@@ -1,43 +1,74 @@
 <div class="auth-container">
-    <div class="auth-card">
-      <h2>{{ isSignupMode ? 'Sign Up' : 'Login' }}</h2>
-  
-      <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input id="username" formControlName="username" type="text" />
-          <small *ngIf="authForm.get('username')?.invalid && authForm.get('username')?.touched">
-            Username is required (min 3 characters).
-          </small>
+  <div class="auth-card">
+    <h2>{{ isSignupMode ? 'Create Account' : 'Welcome Back' }}</h2>
+    <p>{{ isSignupMode ? 'Sign up to get started' : 'Login to your account' }}</p>
+
+    <!-- Global Success & Error Messages -->
+    <div *ngIf="showSuccessMessage" class="message success">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="showErrorMessage" class="message error">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Username -->
+      <div class="form-control">
+        <input
+          type="text"
+          formControlName="username"
+          placeholder="Username"
+          [class.invalid]="username.invalid && (username.dirty || username.touched)"
+        />
+        <div *ngIf="username.invalid && (username.dirty || username.touched)" class="error-text">
+          <div *ngIf="username.errors?.['required']">Username is required.</div>
+          <div *ngIf="username.errors?.['minlength']">Username must be at least 3 characters.</div>
         </div>
-  
-        <div class="form-group" *ngIf="isSignupMode">
-          <label for="email">Email</label>
-          <input id="email" formControlName="email" type="email" />
-          <small *ngIf="authForm.get('email')?.invalid && authForm.get('email')?.touched">
-            Valid email is required.
-          </small>
+      </div>
+
+      <!-- Email (only in signup mode) -->
+      <div class="form-control" *ngIf="isSignupMode">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Email"
+          [class.invalid]="email.invalid && (email.dirty || email.touched)"
+        />
+        <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error-text">
+          <div *ngIf="email.errors?.['required']">Email is required.</div>
+          <div *ngIf="email.errors?.['email']">Please enter a valid email address.</div>
         </div>
-  
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input id="password" formControlName="password" type="password" />
-          <small *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">
-            Password is required (min 6 characters).
-          </small>
+      </div>
+
+      <!-- Password -->
+      <div class="form-control">
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Password"
+          [class.invalid]="password.invalid && (password.dirty || password.touched)"
+        />
+        <div *ngIf="password.invalid && (password.dirty || password.touched)" class="error-text">
+          <div *ngIf="password.errors?.['required']">Password is required.</div>
+          <div *ngIf="password.errors?.['minlength']">Password must be at least 6 characters.</div>
         </div>
-  
-        <div class="actions">
-          <button type="submit">{{ isSignupMode ? 'Sign Up' : 'Login' }}</button>
-          <button type="button" class="link" (click)="toggleMode()">
-            {{ isSignupMode ? 'Already have an account? Login' : "Don't have an account? Sign up" }}
-          </button>
-          <button type="button" class="link" (click)="onForgotPassword()">Forgot Password?</button>
-        </div>
-  
-        <div class="message success" *ngIf="showSuccessMessage">{{ successMessage }}</div>
-        <div class="message error" *ngIf="showErrorMessage">{{ errorMessage }}</div>
-      </form>
+      </div>
+
+      <!-- Forgot password -->
+      <div class="forgot-password" *ngIf="!isSignupMode">
+        <a (click)="onForgotPassword()">Forgot Password?</a>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" [disabled]="authForm.invalid">
+        {{ isSignupMode ? 'Sign Up' : 'Login' }}
+      </button>
+    </form>
+
+    <!-- Toggle Mode -->
+    <div class="toggle-mode">
+      <span>{{ isSignupMode ? 'Already have an account?' : "Don't have an account?" }}</span>
+      <a (click)="toggleMode()">{{ isSignupMode ? 'Login' : 'Sign Up' }}</a>
     </div>
   </div>
-  
+</div>
