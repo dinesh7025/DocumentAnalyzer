@@ -2,17 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { DocumentModel } from '../models/document-model';
 
-export interface DocumentModel {
-  id: number;
-  filename: string;
-  storage_path: string;
-  uploaded_by: number;
-  uploaded_time: string;
-  classified_as: string;
-  status: string;
-  routed_to?: string;
-}
+
 
 @Injectable({
   providedIn: 'root'

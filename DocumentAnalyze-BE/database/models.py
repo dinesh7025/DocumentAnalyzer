@@ -33,6 +33,8 @@ class Document(Base):
     extracted_text = relationship("DocumentText", back_populates="document", uselist=False)
     errors = relationship("Error", back_populates="document")
     routing = relationship("Routing", backref="document", lazy="joined")
+    stages = relationship("ProcessingStage", back_populates="document", cascade="all, delete-orphan", order_by="ProcessingStage.id")
+
 
 
 class DocumentText(Base):
@@ -90,5 +92,5 @@ class ProcessingStage(Base):
     duration = Column(Float)  
     details = Column(Text)
 
-    document = relationship("Document", backref="stages")
+    document = relationship("Document", back_populates="stages")
 

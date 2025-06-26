@@ -4,13 +4,15 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { DocumentService, DocumentModel } from '../../../services/document-service';
+import { DocumentService} from '../../../services/document-service';
 import { UploadDialogComponent } from '../upload-dialog/upload-dialog';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule, MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { interval, Subscription } from 'rxjs';
+import { DocumentModel } from '../../../models/document-model';
+import { ViewProgress } from '../view-progress/view-progress';
 
 @Component({
   standalone: true,
@@ -81,6 +83,12 @@ export class DocumentListComponent implements OnInit, OnDestroy {
       }
     });
   }
+  viewProgress(doc: any): void {
+    this.dialog.open(ViewProgress, {
+      width: '500px',
+      data: doc
+    });
+  }
 
   deleteDocument(id: number) {
     if (confirm('Are you sure you want to delete this document?')) {
@@ -89,6 +97,19 @@ export class DocumentListComponent implements OnInit, OnDestroy {
   }
 
   downloadDocument(path: string) {
-    window.open(path, '_blank');
+    fetch(path)
+      .then(response => response.blob())
+      .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = path.split('/').pop() || 'document';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      });
   }
+  
+  
 }

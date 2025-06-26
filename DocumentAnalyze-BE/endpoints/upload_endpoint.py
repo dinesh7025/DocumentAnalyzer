@@ -1,3 +1,4 @@
+import json
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -45,6 +46,16 @@ def get_all_documents():
         documents = service.get_all_documents()
         doc_list = []
         for doc in documents:
+            #add stage details for each document
+            stages_info = []
+            for stage in doc.stages:
+                stage_data = {
+                    "name": stage.stage,
+                    "duration": stage.duration,
+                    "details": json.loads(stage.details or "{}")
+                }
+                stages_info.append(stage_data)
+            
             doc_info = {
                 "id": doc.id,
                 "filename": doc.filename,
@@ -53,7 +64,8 @@ def get_all_documents():
                 "uploaded_time": doc.upload_time.strftime("%Y-%m-%d %H:%M:%S") if doc.upload_time else None,
                 "status": doc.status,
                 "storage_path": doc.storage_path,
-                "uploaded_by": doc.uploader.username if doc.uploader else "Unknown"
+                "uploaded_by": doc.uploader.username if doc.uploader else "Unknown",
+                "stages": stages_info
             }
             doc_list.append(doc_info)
         return jsonify(doc_list)
@@ -67,7 +79,18 @@ def get_documents_by_user(userId):
     try:
         documents = service.get_documents_by_user(int(userId))
         doc_list = []
+        
         for doc in documents:
+            #add stage details for each document
+            stages_info = []
+            for stage in doc.stages:
+                stage_data = {
+                    "name": stage.stage,
+                    "duration": stage.duration,
+                    "details": json.loads(stage.details or "{}")
+                }
+                stages_info.append(stage_data)
+            
             doc_info = {
                 "id": doc.id,
                 "filename": doc.filename,
@@ -76,9 +99,11 @@ def get_documents_by_user(userId):
                 "uploaded_time": doc.upload_time.strftime("%Y-%m-%d %H:%M:%S") if doc.upload_time else None,
                 "status": doc.status,
                 "storage_path": doc.storage_path,
-                "uploaded_by": doc.uploader.username if doc.uploader else "Unknown"
+                "uploaded_by": doc.uploader.username if doc.uploader else "Unknown",
+                "stages": stages_info
             }
             doc_list.append(doc_info)
+        
         return jsonify(doc_list)
     finally:
         db.close()

@@ -13,3 +13,36 @@ html, body {
   height: 100vh;
   width: 100vw;
 }
+
+.my-custom-tooltip {
+  background-color: #fefefe !important;
+  color: #222 !important;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.my-custom-tooltip::before {
+  content: 'ℹ️'; 
+  font-size: 16px;
+}
+.my-custom-tooltip-show {
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

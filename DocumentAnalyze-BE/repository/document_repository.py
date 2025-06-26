@@ -39,7 +39,10 @@ class DocumentRepository:
         try:
             stmt = (
                 select(Document)
-                .options(joinedload(Document.uploader))
+                .options(
+                    joinedload(Document.uploader),
+                    joinedload(Document.stages)
+                )
                 .where(Document.uploaded_by == user_id)
                 .order_by(desc(Document.upload_time))
             )
@@ -54,7 +57,8 @@ class DocumentRepository:
                 select(Document)
                 .options(
                     joinedload(Document.uploader),
-                    joinedload(Document.extracted_text)
+                    joinedload(Document.extracted_text),
+                    joinedload(Document.stages)
                 )
                 .order_by(desc(Document.upload_time))
             )

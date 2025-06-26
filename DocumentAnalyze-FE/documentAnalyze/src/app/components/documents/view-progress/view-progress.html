@@ -1,0 +1,46 @@
+<div class="progress-container">
+    <h2>Document Processing Stages</h2>
+    <div class="progress-bar">
+      <!-- Ingest Node -->
+      <div
+        class="stage-node completed" 
+        matTooltip="Document uploaded successfully"
+        matTooltipClass="my-custom-tooltip">
+        Ingestor</div>
+  
+      <!-- Extractor Node -->
+      <div
+        class="stage-node"
+        [ngClass]="{ 'completed': getStage('ocr') }"
+        [matTooltip]="getStage('ocr') ? 'OCR took ' + getStage('ocr').duration + ' seconds' : 'Pending'"
+        matTooltipClass="my-custom-tooltip"
+      >
+        Extractor
+      </div>
+  
+      <!-- Classifier Node -->
+      <div
+        class="stage-node"
+        [ngClass]="{ 'completed': getStage('classification') }"
+        [matTooltip]="getStage('classification') ? 'Type: ' + getStage('classification').details.type + ', Confidence: ' + getConfidencePercent(getStage('classification').details.confidence) : 'Pending'"
+        matTooltipClass="my-custom-tooltip"
+      >
+        Classifier
+      </div>
+  
+      <!-- Router Node -->
+      <div
+        class="stage-node"
+        [ngClass]="{ 'completed': getStage('routing') }"
+        [matTooltip]="getStage('routing') ? 'Routed to ' + getStage('routing').details.routed_to : 'Pending'"
+        matTooltipClass="my-custom-tooltip"
+      >
+        Router
+      </div>
+    </div>
+  
+    <div class="button-container">
+      <button mat-raised-button color="primary" (click)="close()">Close</button>
+    </div>
+  </div>
+  
