@@ -19,8 +19,15 @@ class DocumentService:
     def get_documents_by_user(self, user_id):
         return self.repo.get_documents_by_user(user_id)
     
+    def get_document_by_id(self, doc_id):
+        return self.repo.get_documment_by_id(doc_id)
+    
     def update_status(self, doc_id, status):
         return self.repo.update_status(doc_id, status)
+    
+    def update_extracted_text(self, document_id: int, new_text: str):
+        return self.repo.update_extracted_text(document_id, new_text)
+
 
     def delete_document(self, document_id):
         return self.repo.delete_document(document_id)

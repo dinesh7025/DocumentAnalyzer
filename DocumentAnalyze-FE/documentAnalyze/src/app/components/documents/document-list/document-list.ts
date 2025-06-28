@@ -13,6 +13,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { interval, Subscription } from 'rxjs';
 import { DocumentModel } from '../../../models/document-model';
 import { ViewProgress } from '../view-progress/view-progress';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
+import { RouteDialog } from '../route-dialog/route-dialog';
+
 
 @Component({
   standalone: true,
@@ -25,7 +30,8 @@ import { ViewProgress } from '../view-progress/view-progress';
     MatIconButton,
     MatIconModule,
     MatButtonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatMenuModule
   ],
   providers: [DatePipe],
   templateUrl: './document-list.html',
@@ -40,6 +46,7 @@ export class DocumentListComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  snackBar: any;
 
   constructor(private dialog: MatDialog, private docService: DocumentService) {}
 
@@ -47,11 +54,6 @@ export class DocumentListComponent implements OnInit, OnDestroy {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     this.isAdmin = user?.role === 'admin';
     this.fetchDocuments();
-
-    // Optional: Auto-refresh every 10 seconds
-    this.pollingSubscription = interval(10000).subscribe(() => {
-      this.fetchDocuments();
-    });
   }
 
   ngOnDestroy(): void {
@@ -89,6 +91,39 @@ export class DocumentListComponent implements OnInit, OnDestroy {
       data: doc
     });
   }
+  reprocess(docId: number): void {
+    this.docService.reprocessDocument(docId).subscribe({
+      next: () => {
+        this.snackBar.open('Reprocessing started', 'Close', { duration: 3000 });
+        this.fetchDocuments();
+      },
+      error: () => {
+        this.snackBar.open('Failed to reprocess document', 'Close', { duration: 3000 });
+      }
+    });
+  }
+  openRouteDialog(docId: number): void {
+    const dialogRef = this.dialog.open(RouteDialog, {
+      width: '300px',
+      data: { docId }
+    });
+  
+    dialogRef.afterClosed().subscribe(selectedType => {
+      if (selectedType) {
+        this.docService.routeDocument(docId, selectedType).subscribe({
+          next: () => {
+            this.snackBar.open('Document routed successfully', 'Close', { duration: 3000 });
+            this.fetchDocuments();
+          },
+          error: () => {
+            this.snackBar.open('Routing failed', 'Close', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+  
+  
 
   deleteDocument(id: number) {
     if (confirm('Are you sure you want to delete this document?')) {

@@ -35,6 +35,17 @@ export class DocumentService {
     });
   }
 
+  reprocessDocument(docId: number): Observable<any> {
+    return this.http.post(`${this.BASE_URL}/documents/${docId}/reprocess`, {});
+  }
+
+  routeDocument(docId: number, docType: string): Observable<any> {
+  return this.http.post(`${this.BASE_URL}/documents/${docId}/route-to`, {
+    doc_type: docType
+  });
+}
+
+    
   // Delete document
   deleteDocument(documentId: number): Observable<any> {
     return this.http.delete(`${this.BASE_URL}/documents/${documentId}`);

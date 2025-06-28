@@ -26,7 +26,7 @@ class Document(Base):
     uploaded_by = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'))
     upload_time = Column(DateTime, default=datetime.utcnow)
     document_type = Column(Text)
-    status = Column(String(50), default='pending')
+    status = Column(String(50), default='processed' , nullable=False)
     language = Column(Text)
 
     uploader = relationship("User", back_populates="documents")

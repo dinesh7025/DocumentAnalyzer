@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Select Document Type</h2>
+    <mat-dialog-content>
+      <mat-form-field appearance="fill">
+        <mat-label>Document Type</mat-label>
+        <mat-select [(value)]="selectedType">
+          <mat-option value="invoice">Invoice</mat-option>
+          <mat-option value="contract">Contract</mat-option>
+          <mat-option value="resume">Resume</mat-option>
+          <mat-option value="report">Report</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-button color="primary" [disabled]="!selectedType" (click)="onConfirm()">Route</button>
+    </mat-dialog-actions>

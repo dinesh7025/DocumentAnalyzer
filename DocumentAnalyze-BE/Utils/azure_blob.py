@@ -32,3 +32,12 @@ def upload_file_to_blob(file_stream, filename, content_type="application/octet-s
     )
 
     return blob_client.url  # Save this in DB
+
+def copy_blob_to_container(source_url: str, target_container: str, target_filename: str = None) -> str:
+    target_filename = target_filename or f"{uuid.uuid4()}_{os.path.basename(source_url)}"
+
+    target_blob_client = blob_service_client.get_blob_client(container=target_container, blob=target_filename)
+    target_blob_client.start_copy_from_url(source_url)
+
+    print(f"✅ File copied to container '{target_container}' as '{target_filename}'")
+    return target_blob_client.url

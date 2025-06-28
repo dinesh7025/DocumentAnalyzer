@@ -16,3 +16,6 @@ class RoutingService:
             reason="Routed by router_agent"
         )
         return self.routing_repo.create_route(route)
+
+    def update_route(self, documnet_id, target_system, reason):
+        return self.routing_repo.update_route(documnet_id, target_system, reason)

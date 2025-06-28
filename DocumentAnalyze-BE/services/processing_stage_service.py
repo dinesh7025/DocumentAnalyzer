@@ -20,3 +20,7 @@ class ProcessingStageService:
 
     def get_stages_for_document(self, document_id: int):
         return self.get_stages_for_document()
+    
+    def update_stage(self, document_id: int, stage: str, duration: float, details: dict):
+        return self.repo.update_stage(document_id, stage, duration, details)
+

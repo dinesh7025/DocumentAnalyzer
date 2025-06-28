@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, update
 from sqlalchemy.exc import SQLAlchemyError
 from database.models import Document, DocumentText
 from sqlalchemy.orm import joinedload
@@ -67,6 +67,15 @@ class DocumentRepository:
             print(f"Get all error: {e}")
             return []
         
+    def get_documment_by_id(self, doc_id):
+        try:
+            return self.db.query(Document).filter(Document.id == doc_id).first()
+        except Exception as e:
+            self.db.rollback()
+            print(f"Error Occurred: {e}")
+            return None
+
+
     def update_status(self, document_id, status):
         doc = self.db.query(Document).filter_by(id=document_id).first()
         if doc:
@@ -74,6 +83,22 @@ class DocumentRepository:
             self.db.commit()
             return True
         return False
+    
+    def update_extracted_text(self, document_id: int, new_text: str):
+        try:
+            stmt = (
+            update(DocumentText)
+            .where(DocumentText.document_id == document_id)
+            .values(extracted_text=new_text)
+            )
+            self.db.execute(stmt)
+            self.db.commit()
+        except Exception as e:
+            self.db.rollback()
+            print(f"Error Occured: {e} ")
+
+        
+
 
     def delete_document(self, document_id):
         try:

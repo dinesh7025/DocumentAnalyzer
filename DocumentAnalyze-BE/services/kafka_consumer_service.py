@@ -64,6 +64,7 @@ def consume_documents():
 
         class_duration = round((class_end - class_start).total_seconds(),2)
 
+
         # Insert document metadata
         document_data = {
             "filename": filename,
@@ -78,6 +79,20 @@ def consume_documents():
         if not doc_id:
             print("❌ Failed to insert document.")
             continue
+        
+        # Update status based on confidence before routing
+        if confidence >= 0.8:
+            doc_service.update_status(doc_id, "classified")
+        else:
+            doc_service.update_status(doc_id, "review_needed")
+            log_service.log_event(
+                event_type="WARNING",
+                message="Low classification confidence, flagged for human review",
+                source="classifier_agent",
+                user_id=uploaded_by,
+                document_id=doc_id
+            )
+            continue  # Skip routing
 
         doc_service.add_extracted_text(doc_id, extracted_text)
         print(f"✅ Document stored with ID: {doc_id}")
@@ -106,8 +121,12 @@ def consume_documents():
 
         # Route document based on type
         # Routing Stage
+        user = user_service.get_user_by_id(uploaded_by)
+        if not user:
+            raise Exception("User not found")
+        
         route_start = datetime.now(timezone.utc)
-        target_system = route_document(doc_type)
+        target_system = route_document(doc_type, filename,file_url, user.email)
         route_end = datetime.now(timezone.utc)
         routing_service.add_route(doc_id, target_system)
         route_end = datetime.now(timezone.utc)
@@ -124,7 +143,6 @@ def consume_documents():
         except Exception as e:
             print(f"⚠️ Failed to record Routing stage: {e}")
             
-
         # Update document status to "routed"
         doc_service.update_status(doc_id, "routed")
         # Log routing

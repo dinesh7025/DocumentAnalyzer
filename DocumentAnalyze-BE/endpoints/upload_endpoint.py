@@ -6,7 +6,12 @@ from flask import Blueprint, request, jsonify
 from agents.ingestor_agent import ingest_document
 from services.kafka_producer_service import send_to_kafka
 from services.document_service import DocumentService
+from services.user_service import UserService
 from database.base import get_db_connection
+from services.reprocess_service import reprocess_document
+from services.routing_service import RoutingService
+from datetime import datetime, timezone
+from agents.router_agent import route_document
 
 upload_bp = Blueprint("upload", __name__, url_prefix="/api")
 
@@ -108,6 +113,65 @@ def get_documents_by_user(userId):
     finally:
         db.close()
 
+@upload_bp.route("/documents/<int:document_id>/reprocess", methods=["POST"])
+def reprocess_document_endpoint(document_id):
+    try:
+        reprocess_document(document_id)
+        return jsonify({"message": f"Document {document_id} reprocessed successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@upload_bp.route('/documents/<int:doc_id>/route-to', methods=['POST'])
+def reroute_document(doc_id):
+    db = next(get_db_connection())
+    doc_service = DocumentService(db)
+    user_service = UserService(db)
+    routing_service = RoutingService(db)
+
+    data = request.get_json()
+    doc_type = data.get("doc_type", "").strip().lower()
+
+    if not doc_type:
+        return jsonify({"error": "Document type is required"}), 400
+
+    # Fetch document metadata
+    document = doc_service.get_document_by_id(doc_id)
+    if not document:
+        return jsonify({"error": "Document not found"}), 404
+
+    # Fetch uploader's email
+    user = user_service.get_user_by_id(document.uploaded_by)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Route logic
+    try:
+        route_start = datetime.now(timezone.utc)
+        target_system = route_document(doc_type, document.filename, document.storage_path, user.email)
+        route_end = datetime.now(timezone.utc)
+
+        route_duration = round((route_end - route_start).total_seconds(), 2)
+
+        # Update routing record and stage
+        routing_service.update_route(doc_id, target_system,"Re-routed to this system")
+        doc_service.update_status(doc_id, "routed")
+
+        from services.processing_stage_service import ProcessingStageService
+        stage_service = ProcessingStageService(db)
+        stage_service.update_stage(
+            document_id=doc_id,
+            stage="routing",
+            duration=route_duration,
+            details=json.dumps({"routed_to": target_system})
+        )
+
+        return jsonify({
+            "message": f"Document routed to {target_system} successfully.",
+            "duration": route_duration
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 # === [NEW] Delete document by ID ===
 @upload_bp.route("/documents/<int:document_id>", methods=["DELETE"])
 def delete_document(document_id):
