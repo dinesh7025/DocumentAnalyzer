@@ -11,23 +11,23 @@
         <td mat-cell *matCellDef="let doc">{{ doc.id }}</td>
       </ng-container>
   
-   <ng-container matColumnDef="filename">
-  <th mat-header-cell *matHeaderCellDef mat-sort-header>File Name</th>
-  <td mat-cell *matCellDef="let doc" class="filename-cell" [matTooltip]="doc.filename" matTooltipClass="my-custom-tooltip">
-    {{ doc.filename.length > 20 ? (doc.filename | slice:0:20) + '...' : doc.filename }}
-  </td>
-</ng-container>
+    <ng-container matColumnDef="filename">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>File Name</th>
+      <td mat-cell *matCellDef="let doc" class="filename-cell" [matTooltip]="doc.filename" matTooltipClass="my-custom-tooltip">
+        {{ doc.filename.length > 20 ? (doc.filename | slice:0:20) + '...' : doc.filename }}
+      </td>
+    </ng-container>
 
 
   
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Classified As</th>
-        <td mat-cell *matCellDef="let doc">{{ doc.classified_as || '-' }}</td>
+        <td mat-cell *matCellDef="let doc">{{ doc.classified_as ? (doc.classified_as | titlecase) : '-' }}</td>
       </ng-container>
   
       <ng-container matColumnDef="routed">
         <th mat-header-cell *matHeaderCellDef>Routed To</th>
-        <td mat-cell *matCellDef="let doc">{{ doc.routed_to || '-' }}</td>
+        <td mat-cell *matCellDef="let doc">{{ formatRoute(doc.routed_to) }}</td>
       </ng-container>
   
       <ng-container matColumnDef="time">
@@ -37,7 +37,11 @@
   
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
-        <td mat-cell *matCellDef="let doc">{{ doc.status }}</td>
+        <td mat-cell *matCellDef="let doc">
+          <span [ngClass]="getStatusClass(doc.status)" class="status-badge">
+            {{ doc.status | titlecase }}
+          </span>
+        </td>
       </ng-container>
   
       <ng-container matColumnDef="actions">
@@ -47,7 +51,7 @@
             <mat-icon>more_vert</mat-icon>
           </button>
       
-          <mat-menu #menu="matMenu">
+          <mat-menu #menu="matMenu" class="custom-action-menu" yPosition="below" xPosition="before">
             <button mat-menu-item (click)="downloadDocument(doc.storage_path)">
               <mat-icon>download</mat-icon>
               <span>Download</span>
@@ -82,6 +86,6 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   
-    <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSize]="10" showFirstLastButtons></mat-paginator>
   </div>
   

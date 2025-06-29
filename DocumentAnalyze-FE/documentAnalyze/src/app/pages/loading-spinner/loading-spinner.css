@@ -1,0 +1,46 @@
+.spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.dot-spinner {
+  display: flex;
+  gap: 16px;
+}
+
+.dot-spinner .dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #1b8092, #512da8, #7c4dff);
+  background-size: 200% 200%;
+  animation: fadePulse 1.2s infinite ease-in-out;
+  animation-delay: calc(var(--i, 0) * 0.15s);
+  animation-name: fadePulse;
+  opacity: 0.6;
+}
+
+.dot-spinner .dot:nth-child(1) { --i: 0; }
+.dot-spinner .dot:nth-child(2) { --i: 1; }
+.dot-spinner .dot:nth-child(3) { --i: 2; }
+.dot-spinner .dot:nth-child(4) { --i: 3; }
+
+@keyframes fadePulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+    background-position: right center;
+  }
+}

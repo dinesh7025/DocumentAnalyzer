@@ -1,0 +1,82 @@
+.route-dialog {
+    padding: 1rem;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Title */
+  .route-dialog h2[mat-dialog-title] {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  /* Full width form field */
+  .route-dialog .full-width {
+    width: 100%;
+  }
+  
+  /* Make mat-select and options clean & rounded */
+  .route-dialog mat-form-field {
+    width: 100%;
+  }
+  
+  .route-dialog mat-select {
+    border-radius: 8px;
+    background: #f9f9f9;
+    padding: 6px 0;
+    font-weight: 500;
+  }
+  
+  .route-dialog mat-select:hover {
+    background: #f0f0f0;
+  }
+  
+  /* Material options (global theme can override, this helps ensure scoped control) */
+  .route-dialog ::ng-deep .mat-option {
+    border-radius: 6px;
+    margin: 2px 4px;
+  }
+  
+  .route-dialog ::ng-deep .mat-option:hover {
+    background-color: #e0eaff;
+  }
+  
+  /* Buttons layout */
+  .route-dialog mat-dialog-actions {
+    margin-top: 1.2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+  
+  /* Base button styles */
+  .dialog-button {
+    padding: 8px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: none;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  /* Cancel button */
+  .cancel-button {
+    background-color: #f1f1f1;
+    color: #444;
+  }
+  
+  .cancel-button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Route button */
+  .route-button {
+    background-color: rgba(33, 150, 243, 0.1); /* light blue translucent */
+    color: #1976d2;
+  }
+  
+  .route-button:hover {
+    background-color: rgba(33, 150, 243, 0.2);
+  }
+  

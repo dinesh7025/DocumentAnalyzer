@@ -122,6 +122,28 @@ export class DocumentListComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  formatRoute(value: string): string {
+    if (!value) return '-';
+    const upper = value.toUpperCase();
+    return ['ERP', 'DMS'].includes(upper) ? upper : value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  }
+  
+  getStatusClass(status: string): string {
+    const value = status?.toLowerCase();
+    switch (value) {
+      case 'routed':
+        return 'status-success';
+      case 'review_needed':
+        return 'status-warning';
+      case 'classified':
+        return 'status-info';
+      case 'failed':
+        return 'status-error';
+      default:
+        return 'status-neutral';
+    }
+  }
   
   
 

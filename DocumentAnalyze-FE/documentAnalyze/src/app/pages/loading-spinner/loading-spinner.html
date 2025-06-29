@@ -1,0 +1,5 @@
+<div class="spinner-overlay" *ngIf="loadingService.loading$ | async">
+  <div class="dot-spinner">
+    <div class="dot" *ngFor="let i of [0, 1, 2, 3]"></div>
+  </div>
+</div>
