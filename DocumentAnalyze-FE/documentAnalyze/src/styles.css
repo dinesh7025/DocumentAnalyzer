@@ -46,3 +46,55 @@ html, body {
     transform: translateY(0);
   }
 }
+.custom-action-menu {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 8px 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  animation: fadeInScale 200ms ease-out forwards;
+  transform-origin: top right;
+  min-width: 180px;
+  z-index: 1000;
+}
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.custom-action-menu .mat-menu-item {
+  color: #fff;
+  transition: background-color 0.3s ease;
+}
+
+.custom-action-menu .mat-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+}
+
+.custom-action-menu .mat-icon {
+  color: #fff;
+}
+.select-panel {
+  background-color: #ffffff !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+  padding: 4px 0;
+}
+
+.select-panel .mat-option {
+  border-radius: 6px;
+  margin: 2px 4px;
+  font-weight: 500;
+}
+
+.select-panel .mat-option:hover {
+  background-color: #e3f2fd;
+}
