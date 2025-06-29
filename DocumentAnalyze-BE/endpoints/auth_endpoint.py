@@ -71,6 +71,8 @@ def login():
         "user_id": user.id,
         "username": user.username,
         "role": user.role,
+         "app_email": user.app_email,  # Added app_email to JWT payload
+        "app_password": user.app_password, # Added app_password to JWT payload
         "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=8)
     }
 
@@ -81,6 +83,8 @@ def login():
         "user": {
             "user_id": user.id,
             "username": user.username,
-            "role": user.role
+            "role": user.role,
+             "app_email": user.app_email,  # Added app_email to JWT payload
+           "app_password": user.app_password, # Added app_password to JWT payload
         }
     }), 200

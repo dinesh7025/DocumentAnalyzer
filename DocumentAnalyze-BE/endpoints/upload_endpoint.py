@@ -2,6 +2,9 @@ import json
 import sys, os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from flask import request, jsonify, session
+from services.user_service import UserService
+from database.base import get_db_connection
 from flask import Blueprint, request, jsonify
 from agents.ingestor_agent import ingest_document
 from services.kafka_producer_service import send_to_kafka
@@ -11,6 +14,7 @@ from database.base import get_db_connection
 from services.reprocess_service import reprocess_document
 from services.routing_service import RoutingService
 from datetime import datetime, timezone
+from services.email_service import fetch_email_attachments
 from agents.router_agent import route_document
 
 upload_bp = Blueprint("upload", __name__, url_prefix="/api")
@@ -182,5 +186,121 @@ def delete_document(document_id):
         if success:
             return jsonify({"message": "Document deleted successfully"})
         return jsonify({"error": "Document not found"}), 404
+    finally:
+        db.close()
+
+@upload_bp.route("/fetch-email", methods=["POST"])
+def fetch_documents_from_email():
+    from werkzeug.datastructures import FileStorage
+    from services.user_service import UserService
+
+    data = request.get_json()
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 401
+
+    db = next(get_db_connection())
+    user_service = UserService(db)
+
+    try:
+        user = user_service.get_user_by_id(user_id)
+        if not user or not user.app_email or not user.app_password:
+            return jsonify({"error": "No saved email credentials found"}), 400
+
+        attachments = fetch_email_attachments(user.app_email, user.app_password)
+        results = []
+
+        for att in attachments:
+            byte_stream = att["content"]
+            byte_stream.seek(0)
+
+            file = FileStorage(
+                stream=byte_stream,
+                filename=att["filename"],
+                content_type="application/octet-stream"
+            )
+
+            result = ingest_document(file)
+
+            result["email_subject"] = att["subject"]
+            result["email_from"] = att["from"]
+            result["email_date"] = att["date"].strftime("%Y-%m-%d %H:%M:%S")
+
+            send_to_kafka("document_ingest", {
+                "filename": result["filename"],
+                "extracted_text": result["extracted_text"],
+                "file_url": result["file_url"],
+                "uploaded_by": user_id,
+                "ocr_duration": result["duration"],
+            })
+
+            results.append(result)
+
+        return jsonify({
+            "message": f"{len(results)} documents fetched and queued",
+            "documents": results
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        db.close()
+
+@upload_bp.route("/users/save-app-credentials", methods=["POST"])
+def save_app_credentials():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        app_email = data.get("app_email")
+        app_password = data.get("app_password")
+
+        if not user_id:
+            return jsonify({"error": "User ID is required"}), 400
+        if not app_email or not app_password:
+            return jsonify({"error": "Both app_email and app_password are required"}), 400
+
+        db = next(get_db_connection())
+        user_service = UserService(db)
+
+        user = user_service.get_user_by_id(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # ✅ Save credentials to the user model
+        user.app_email = app_email
+        user.app_password = app_password
+        db.commit()
+
+        return jsonify({"message": "Email credentials saved successfully"}), 200
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
+
+@upload_bp.route("/users/clear-app-credentials", methods=["POST"])
+def clear_app_credentials():
+    from services.user_service import UserService
+    from database.base import get_db_connection
+
+    data = request.get_json()
+    user_id = data.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    db = next(get_db_connection())
+    user_service = UserService(db)
+
+    try:
+        user = user_service.get_user_by_id(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user_service.update_app_credentials(user_id, None, None)
+
+        return jsonify({"message": "App email and password cleared successfully"}), 200
     finally:
         db.close()

@@ -52,3 +52,4 @@ desktop.ini
 *.log
 logs/
 *.log.*
+DocumentAnalyze-BE/agents/__pycache__/classifier_agent.cpython-313.pyc

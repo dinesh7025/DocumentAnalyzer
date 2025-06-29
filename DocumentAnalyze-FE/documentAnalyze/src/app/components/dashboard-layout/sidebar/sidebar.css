@@ -8,7 +8,10 @@
   backdrop-filter: blur(6px);
   transition: all 0.3s ease;
 }
-
+.text{
+  font-weight: bolder;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
 
 
 

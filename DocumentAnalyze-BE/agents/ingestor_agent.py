@@ -17,6 +17,7 @@ def ingest_document(file):
         ocr_start = datetime.now(timezone.utc)
         text = extract_text_from_pdf(file)
         ocr_end = datetime.now(timezone.utc)
+        duration = round((ocr_end - ocr_start).total_seconds(), 2)
         
     elif filename.endswith((".png", ".jpg", ".jpeg")):
         file.stream.seek(0)

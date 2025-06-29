@@ -13,7 +13,8 @@ class User(Base):
     email = Column(String(255), unique=True)
     role = Column(String(50), default='user')
     created_at = Column(DateTime, default=datetime.utcnow)
-
+    app_email = Column(String(255), nullable=True)
+    app_password = Column(String(255), nullable=True)
     documents = relationship("Document", back_populates="uploader")
 
 

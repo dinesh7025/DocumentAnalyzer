@@ -166,3 +166,11 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.users
     OWNER to postgres;
+
+
+---- 
+ALTER TABLE public.users
+ADD COLUMN app_email character varying(255) COLLATE pg_catalog."default";
+
+ALTER TABLE public.users
+ADD COLUMN app_password text; also modify in models.py

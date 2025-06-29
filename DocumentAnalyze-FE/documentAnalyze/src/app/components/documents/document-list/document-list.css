@@ -7,6 +7,17 @@
   overflow: hidden;
 }
 
+.head{
+  font-weight: bolder;
+  color: rgb(18, 57, 66);
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.text{
+  font-weight: bolder;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
 /* Table Wrapper to enable scroll */
 table.mat-table {
   min-width: 1000px;

@@ -1,11 +1,23 @@
 <mat-nav-list class="sidebar">
-    <a mat-list-item routerLink="/documents" routerLinkActive="active">
+    <a mat-list-item routerLink="/documents" routerLinkActive="active"  class="text">
       <mat-icon>description</mat-icon>
       Documents
     </a>
-    <a mat-list-item (click)="openUpload()">
+    <a mat-list-item (click)="openUpload()" class="text">
       <mat-icon>upload_file</mat-icon>
       Upload Document
     </a>
+     <mat-nav-list>
+  <a mat-list-item (click)="checkEmail()" class="text">
+    <mat-icon>mark_email_read</mat-icon>
+    Check Email
+  </a>
+   <a mat-list-item *ngIf="hasEmailCredentials" (click)="signOutEmail()" class="text">
+    <mat-icon>logout</mat-icon>
+    Sign Out Email
+  </a>
+</mat-nav-list>
+
+  
   </mat-nav-list>
   
